@@ -523,3 +523,6 @@ local/005278_fd.mat
 local/005279_fd.mat
 local/005294_fd.mat
 local/005302_fd.mat
+results/comp1_cls_val_bicycle.txt
+results/comp1_cls_val_bus.txt
+results/comp1_cls_val_car.txt
