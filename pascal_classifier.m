@@ -1,10 +1,27 @@
-function pascal_classifier
+function example_classifier
 clc; clear; close all;
 % change this path if you install the VOC code elsewhere
 addpath([cd '/VOCcode']);
 
+% add weka path
+if strncmp(computer,'PC',2)
+    javaaddpath('C:\Program Files\Weka-3-7\weka.jar');
+elseif strncmp(computer,'GLNX',4)
+    javaaddpath('/home/evargasv/weka-3-7-11/weka.jar');
+elseif strncmp(computer,'MACI64',3)
+    javaaddpath('/Applications/weka-3-7-11-apple-jvm.app/Contents/Resources/Java/weka.jar')
+end
+
+
+import weka.*;
+
+
 % initialize VOC options
 VOCinit;
+
+
+% load dictionary for the class 
+dictionary = load_dictionary( VOCopts, 500 );
 
 % train and test classifier for each class
 for i=1:VOCopts.nclasses
@@ -13,7 +30,7 @@ for i=1:VOCopts.nclasses
     
     
     % train classifier
-    classifier = train(VOCopts, cls);                  
+    classifier = train(VOCopts, cls, dictionary);                  
     
     % test classifier
     test(VOCopts,cls,classifier);                   
@@ -28,22 +45,20 @@ for i=1:VOCopts.nclasses
     
 end
 
-function [ dictionary ] = load_dictionary( VOCopts, cls )
+function [ dictionary ] = load_dictionary( VOCopts, num_clusters )
 %LOAD_DICTIONARY Summary of this function goes here
 %   Detailed explanation goes here
 
-    disp(['==== Dictionary for class ' cls])
 
-    cls_clusters = [VOCopts.dictpath, cls, '.mat'];
-    
-    dictionary = [];
-    if exist(cls_clusters, 'file')
-        load( [VOCopts.dictpath, cls, '.mat'] );
+    % folder where the features will be stored
+    centroids_file = [VOCopts.dictpath_global, ['centroids_' num2str(num_clusters) '.mat']]
+
+    try
+        load(centroids_file);
         dictionary = centroids;
-    else
-        disp('     [Dictionary NOT FOUND !]')   
+    catch
+        disp('Dictionary could NOT be loaded!! ')
     end
-        
 
 
 % train classifier
@@ -52,8 +67,6 @@ function classifier = train( VOCopts, cls, dictionary)
     % load 'train' image set for class
     [ids,classifier.gt] = textread(sprintf(VOCopts.clsimgsetpath,cls,'train'),'%s %d');
 
-    % load dictionary for the class
-    classifier.dictionary = load_dictionary( VOCopts, cls );
     
     % extract features for each image
     classifier.FD=zeros(0,length(ids));
@@ -75,7 +88,7 @@ function classifier = train( VOCopts, cls, dictionary)
             
             % compute and save features
             I  = imread(sprintf(VOCopts.imgpath,ids{i}));
-            fd = extractfd( VOCopts, I, classifier.dictionary);
+            fd = extractfd( VOCopts, I, dictionary);
             
             save(sprintf(VOCopts.exfdpath,ids{i}),'fd');
         end
@@ -83,7 +96,8 @@ function classifier = train( VOCopts, cls, dictionary)
         classifier.FD( 1:length(fd) , i ) = fd';
         
     end
-
+classifier = weka_classifier( classifier.FD', classifier.gt );
+    
 function histogram = make_histogram( image_feat, dict_feat )
    
     histogram = zeros( 1, size( dict_feat, 2 ) );
@@ -91,9 +105,9 @@ function histogram = make_histogram( image_feat, dict_feat )
     % find the best sift descriptor matching
     matches = siftmatch ( image_feat, dict_feat );
     
-    for i = 1 : size( dict_feat,2 )
-        idx = matches(2,:) == i;
-        histogram(i) = sum( matches(1,idx) );
+    for i = 1 : size( matches,2 )
+        idx = matches(2,i);
+        histogram(idx) = histogram(idx) + 1;
     end
     
 function histogram = make_histogram_2( image_feat, dict_feat )
@@ -126,44 +140,58 @@ function d = similarity_measurement(f1, f2)
     d = norm( f1 - f2 );
 
 % run classifier on test images
-function test(VOCopts, cls, classifier)
+function test(VOCopts,cls,classifier)
 
-    % load test set ('val' for development kit)
-    [ids,gt]=textread(sprintf(VOCopts.clsimgsetpath,cls,VOCopts.testset),'%s %d');
+% load test set ('val' for development kit)
+[ids,gt]=textread(sprintf(VOCopts.clsimgsetpath,cls,VOCopts.testset),'%s %d');
 
-    % create results file
-    fid=fopen(sprintf(VOCopts.clsrespath,'comp1',cls),'w');
+% extract features for each image
+vecTest=zeros(0,length(ids));
 
-    % classify each image
-    tic;
-    for i=1:length(ids)
-        % display progress
-        if toc>1
-            fprintf('%s: test: %d/%d\n',cls,i,length(ids));
-            drawnow;
-            tic;
-        end
-
-        try
-            % try to load features
-            load(sprintf(VOCopts.exfdpath,ids{i}),'fd');
-        catch
-            % compute and save features
-            I=imread(sprintf(VOCopts.imgpath,ids{i}));
-            fd=extractfd(VOCopts, I, classifier.dictionary);
-            
-            save(sprintf(VOCopts.exfdpath,ids{i}),'fd');
-        end
-
-        % compute confidence of positive classification
-        c=classify(VOCopts,classifier,fd');
-
-        % write to results file
-        fprintf(fid,'%s %f\n',ids{i},c);
+% classify each image
+tic;
+for i=1:length(ids)
+    % display progress
+    if toc>1
+        fprintf('%s: test: %d/%d\n',cls,i,length(ids));
+        drawnow;
+        tic;
+    end
+    
+    try
+        % try to load features
+        load(sprintf(VOCopts.exfdpath,ids{i}),'fd');
+    catch
+        % compute and save features
+        I=imread(sprintf(VOCopts.imgpath,ids{i}));
+        fd=extractfd(VOCopts,I);
+        save(sprintf(VOCopts.exfdpath,ids{i}),'fd');
+        
     end
 
-    % close results file
-    fclose(fid);
+    vecTest(1:length(fd),i)=fd;
+    
+    % compute confidence of positive classification
+    %c=classify(VOCopts,classifier,fd);
+    
+    % write to results file
+    %fprintf(fid,'%s %f\n',ids{i},c);
+end
+
+[correct,prob] = weka_evaluation( classifier, vecTest', gt );
+correct
+
+% save results 
+
+% create results file
+fid=fopen(sprintf(VOCopts.clsrespath,'comp1',cls),'w');
+
+for i=1:length(ids)
+    fprintf(fid,'%s %f\n',ids{i},prob(i));
+end
+
+% close results file
+fclose(fid);
 
 % trivial feature extractor: compute mean RGB
 function fd = extractfd(VOCopts, I, dictionary)
@@ -183,7 +211,7 @@ function fd = extractfd(VOCopts, I, dictionary)
     % fd = [fd; sift_descriptor(I)];
     
     fd = sift_descriptor(I);
-    fd = make_histogram_2( fd, dictionary' );
+    fd = make_histogram( fd, dictionary );
     %[xx,yy] = stairs(histogram);
     %area(xx,yy);
 
