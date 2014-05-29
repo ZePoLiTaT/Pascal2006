@@ -11,6 +11,8 @@ function pascal_classifier
     % initialize VOC options
     VOCinit;
 
+    % create an AUC results table 
+    results_auc = zeros( VOCopts.nclasses, 1 );
 
     % load dictionary for the class 
     dictionary = load_dictionary( VOCopts, 500 );
@@ -28,14 +30,17 @@ function pascal_classifier
         test(VOCopts,cls,dictionary,classifier);                   
 
         % compute and display ROC
-        [fp,tp,auc]=VOCroc(VOCopts,'comp1',cls,true);   
+        figure(i);
+        [fp, tp, results_auc(i) ]=VOCroc(VOCopts,'comp1',cls,true);   
 
-        if i<VOCopts.nclasses
-            fprintf('press any key to continue with next class...\n');
-            pause;
-        end
+%         if i<VOCopts.nclasses
+%             fprintf('press any key to continue with next class...\n');
+%             pause;
+%         end
 
     end
+    
+    latex_table( VOCopts.classes, results_auc );
 end
 
 function [ dictionary ] = load_dictionary( VOCopts, num_clusters )

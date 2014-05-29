@@ -3,6 +3,7 @@ clear VOCopts
 % get current directory with forward slashes
 
 addpath('../lib/sift')
+addpath('functions/')
 
 % add weka path
 if strncmp(computer,'PC',2)
