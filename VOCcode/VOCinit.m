@@ -2,7 +2,19 @@ clear VOCopts
 
 % get current directory with forward slashes
 
-addpath('../Others/sift')
+addpath('../lib/sift')
+
+% add weka path
+if strncmp(computer,'PC',2)
+    javaaddpath('C:\Program Files\Weka-3-7\weka.jar');
+elseif strncmp(computer,'GLNX',4)
+    javaaddpath('/home/evargasv/weka-3-7-11/weka.jar');
+elseif strncmp(computer,'MACI64',3)
+    javaaddpath('/Applications/weka-3-7-11-apple-jvm.app/Contents/Resources/Java/weka.jar')
+end
+
+import weka.*;
+
 
 cwd=cd;
 cwd(cwd=='\')='/';
@@ -48,5 +60,6 @@ VOCopts.dictclasspath = [VOCopts.dictpath ,'%s/'];
 VOCopts.dictpath_global = [VOCopts.localdir 'dictionary_global/'];
 VOCopts.dictclasspath_global = [VOCopts.dictpath_global ,'%s/'];
 
-VOCopts.dictnamefrmt  = '%s_fd.mat';
+
 VOCopts.exfdpath=[VOCopts.localdir '%s_fd.mat'];
+VOCopts.exbgpath=[VOCopts.localdir 'bg_%s.mat'];
