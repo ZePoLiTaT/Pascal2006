@@ -123,11 +123,20 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             img  = imread(sprintf(VOCopts.imgpath,ids{i}));
             img_box  = img( cur_box(2):cur_box(4), cur_box(1):cur_box(3), : );
 
-            % Extract all features
-            fd_sift = sift_features( img_box, sprintf(VOCopts.sift_path, j, ids{i}) );
-            fd_hist = sift_histogram( fd_sift, sift_dict, sprintf(VOCopts.hist_path, dict_size, j, ids{i}) );
+            % Paths to feature directories
+            sift_path = sprintf(VOCopts.sift_path, j, ids{i});
+            hist_path = sprintf(VOCopts.hist_path, dict_size, j, ids{i});
+            text_path = sprintf(VOCopts.text_path, j, ids{i});
             
-            fd_text = texture_cooccurrence( img_box, sprintf(VOCopts.text_path, j, ids{i}) );
+            
+            % SIFT features
+            fd_sift = sift_features( img_box, sift_path );
+            fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
+            
+            % Texture features
+            offset = [0 2; -2 2; 0 5; -5 5; 0 15; -15 15];
+            fd_text = texture_cooccurrence( img_box, text_path, offset );
+            
             
             % Concatenate features
             fd = [fd_text, fd_hist];

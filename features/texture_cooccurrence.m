@@ -1,4 +1,4 @@
-function fd = texture_cooccurrence(img, img_path)
+function coocurrence = texture_cooccurrence(img, img_path, offset)
 %TEXTURE_FEATURES Extract texture features from an image
 %   Using the MATLAB functions graycomatrix and graycoprops, texture
 %   features of a matrix are extracted, with orientation 0 degrees and
@@ -8,18 +8,18 @@ function fd = texture_cooccurrence(img, img_path)
 
     try
         % try to load features
-        load( img_path, 'fd');
+        load( img_path, 'coocurrence');
     catch
 
         % compute and save features
         img = rgb2gray(img);
         % orientation: 0 degrees, distance: 2
-        comat_im = graycomatrix(img, 'Offset',[0 2], 'Symmetric', true);
+        comat_im = graycomatrix(img, 'Offset',offset, 'Symmetric', true);
         % statistics
-        fd = graycoprops(comat_im,{'Contrast','Homogeneity', 'Energy', 'Correlation'});
-        fd = struct2array( fd );
+        coocurrence = graycoprops(comat_im,{'Contrast','Homogeneity', 'Energy', 'Correlation'});
+        coocurrence = struct2array( coocurrence );
     
-        save( img_path , 'fd');
+        save( img_path , 'coocurrence');
         
         % clf; imagesc(I) ; colormap gray ; axis image ; hold on ;
         % h=plotsiftframe( frames(:,sel),'style','arrow' ) ; set(h,'LineWidth',1,'Color','g') ;
