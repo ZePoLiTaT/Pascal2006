@@ -9,7 +9,7 @@ function pascal_classifier
     
     
     % parameters initialization
-    dict_size = 400;
+    dict_size = 500;
     
     % initialize VOC options
     VOCinit;
@@ -76,6 +76,10 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
     % get the size of the dictionaries
     dict_size = size(sift_dict, 2);
 
+    % set the number of offsets and directions of the co-occurrence
+    % matrices
+    offset = create_offsets( [2,5,30], [1 1 1 1] );
+    
     % load 'train' image set for class
     features_file = sprintf(VOCopts.clsimgsetpath, VOCopts.classes{1}, stage)
     [ids, ~] = textread(features_file,'%s %d');
@@ -134,7 +138,6 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
             
             % Texture features
-            offset = [0 2; -2 2; 0 5; -5 5; 0 15; -15 15];
             fd_text = texture_cooccurrence( img_box, text_path, offset );
             
             
@@ -150,6 +153,26 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
         
     end
     
+end
+
+function offset = create_offsets( dir, ang_idx )
+    
+    % vector with all available offsets
+    offset_all = [0 1; -1 1; -1 0; -1 -1];
+    
+    % which angles do we actually want
+    ang_idx = find(ang_idx == true);
+    
+    % work only with the angles specified by ang
+    offset_all = offset_all( ang_idx, : );
+    ang_num = size(offset_all,1);
+    
+    % initialize output with size:  ( #dir x #angles , 2 )
+    offset = [];
+    
+    for i = 1: length(dir)
+        offset = [offset; offset_all * dir(i)];
+    end
 end
 
 % train classifier
