@@ -22,10 +22,10 @@ function [ histogram ] = sift_histogram( features, dictionary, img_path, varargi
 
     
     % If additional flag is provided, then plot the histogram
-        if numel(varargin) == 1
-            figure(99);
-            [x,y] = stairs( histogram );
-            area(x,y);
-        end
+    if numel(varargin) == 1
+        figure(99);
+        [x,y] = stairs( histogram );
+        area(x,y);
+    end
 end
 

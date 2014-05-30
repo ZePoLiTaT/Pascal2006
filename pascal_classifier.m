@@ -9,7 +9,7 @@ function pascal_classifier
     
     
     % parameters initialization
-    dict_size = 500;
+    dict_size = 400;
     
     % initialize VOC options
     VOCinit;
@@ -18,7 +18,6 @@ function pascal_classifier
     % create an AUC results table 
     results_auc = zeros( VOCopts.nclasses, 1 );
     
-    % load dictionary for the class 
     sift_dict = load_dictionary( VOCopts, dict_size );
     
     train_dataset = load_features( VOCopts, 'train', sift_dict, true );
@@ -51,13 +50,13 @@ function pascal_classifier
 end
 
 
-function dictionary = load_dictionary( VOCopts, num_clusters )
+function dictionary = load_dictionary( VOCopts, dict_size )
 %LOAD_DICTIONARY Summary of this function goes here
 %   Detailed explanation goes here
 
 
     % folder where the features will be stored
-    centroids_file = [VOCopts.dictpath_global, ['centroids_' num2str(num_clusters) '.mat']]
+    centroids_file = [VOCopts.dictpath_global, ['centroids_' num2str(dict_size) '.mat']]
 
     try
         load(centroids_file);
@@ -79,6 +78,7 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
     % set the number of offsets and directions of the co-occurrence
     % matrices
     offset = create_offsets( [2,5,30], [1 1 1 1] );
+    color_bins = 1;
     
     % load 'train' image set for class
     features_file = sprintf(VOCopts.clsimgsetpath, VOCopts.classes{1}, stage)
@@ -127,10 +127,16 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             img  = imread(sprintf(VOCopts.imgpath,ids{i}));
             img_box  = img( cur_box(2):cur_box(4), cur_box(1):cur_box(3), : );
 
+            % Initialize feature vectors
+            fd_hist = [];
+            fd_text = [];
+            fd_color = [];
+            
             % Paths to feature directories
             sift_path = sprintf(VOCopts.sift_path, j, ids{i});
             hist_path = sprintf(VOCopts.hist_path, dict_size, j, ids{i});
             text_path = sprintf(VOCopts.text_path, j, ids{i});
+            color_path = sprintf(VOCopts.color_path, color_bins, j, ids{i});
             
             
             % SIFT features
@@ -138,11 +144,13 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
             
             % Texture features
-            fd_text = texture_cooccurrence( img_box, text_path, offset );
+            %fd_text = texture_cooccurrence( img_box, text_path, offset );
             
+            % Color features
+            fd_color = color_histogram( img_box, color_path, color_bins );
             
             % Concatenate features
-            fd = [fd_text, fd_hist];
+            fd = [fd_text, fd_color, fd_hist];
             
             dataset.gt_ix = [ dataset.gt_ix; i ];
             dataset.FD = [ dataset.FD, fd'];
