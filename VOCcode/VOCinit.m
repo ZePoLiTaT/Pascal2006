@@ -3,15 +3,19 @@ clear VOCopts
 % get current directory with forward slashes
 
 addpath('../lib/sift')
-addpath('functions/')
+addpath('./functions/')
+addpath('./features/')
 
 % add weka path
 if strncmp(computer,'PC',2)
     javaaddpath('C:\Program Files\Weka-3-7\weka.jar');
+    run('../lib\vlfeat-0.9.18\toolbox\vl_setup')
 elseif strncmp(computer,'GLNX',4)
     javaaddpath('/home/evargasv/weka-3-7-11/weka.jar');
+    run('../lib/vlfeat-0.9.18/toolbox/vl_setup')
 elseif strncmp(computer,'MACI64',3)
     javaaddpath('/Applications/weka-3-7-11-apple-jvm.app/Contents/Resources/Java/weka.jar')
+    run('../lib/vlfeat-0.9.18/toolbox/vl_setup')
 end
 
 import weka.*;
@@ -44,6 +48,7 @@ VOCopts.imgpath=[VOCopts.imgpathfolder '%s.png'];
 VOCopts.clsrespath=[VOCopts.resdir '%s_cls_' VOCopts.testset '_%s.txt'];
 VOCopts.detrespath=[VOCopts.resdir '%s_det_' VOCopts.testset '_%s.txt'];
 
+
 % initialize the VOC challenge options
 
 VOCopts.classes={'bicycle','bus','car','cat','cow','dog',...
@@ -52,6 +57,7 @@ VOCopts.classes={'bicycle','bus','car','cat','cow','dog',...
 
 VOCopts.nclasses=length(VOCopts.classes);
 VOCopts.minoverlap=0.5;
+
 
 % initialize example options
 
@@ -63,4 +69,21 @@ VOCopts.dictclasspath_global = [VOCopts.dictpath_global ,'%s/'];
 
 
 VOCopts.exfdpath=[VOCopts.localdir '%s_fd.mat'];
-VOCopts.exbgpath=[VOCopts.localdir 'bg_%s.mat'];
+
+% initialize options for our implementation 
+
+VOCopts.fd_folders = {'sift/', 'bg_sift/', 'textures/'};
+
+for i = 1: length(VOCopts.fd_folders)
+    folder = [VOCopts.localdir  VOCopts.fd_folders{i}];
+    if ~exist( folder, 'dir' )
+        mkdir( folder );
+    end
+end
+
+
+VOCopts.sift_path = [VOCopts.localdir VOCopts.fd_folders{1} 'sift_%d_%s.mat'];
+VOCopts.hist_path = [VOCopts.localdir VOCopts.fd_folders{2} 'hist%d_%d_%s.mat'];
+VOCopts.text_path = [VOCopts.localdir VOCopts.fd_folders{3} 'text_%d_%s.mat'];
+
+

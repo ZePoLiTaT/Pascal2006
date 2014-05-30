@@ -22,8 +22,13 @@ function generate_dictionary_global( )
     extract_features( VOCopts, ids );	
 
     % clusterize!!
-    make_cluster( VOCopts, 500 );
-    disp('     [Done !]')
+    %cluserts = [400,600,650];
+    cluserts = [100,200,300,700,1000];
+    for i = 1: length(cluserts)
+        make_cluster( VOCopts, cluserts(i) );
+        disp('     [Done !]')
+    end
+    
 
 
 function ids = get_subset_ids(VOCopts)
@@ -102,8 +107,8 @@ function centroids = make_cluster( VOCopts, num_clusters )
     centroids = [];
 
     % folder where the features will be stored
-    centroids_file = [VOCopts.dictpath_global, 'centroids.mat'];
-
+    centroids_file = [VOCopts.dictpath_global, ['centroids_' num2str(num_clusters) '.mat']]
+  
     try
         load(centroids_file)
     catch
@@ -137,11 +142,14 @@ function centroids = make_cluster( VOCopts, num_clusters )
             features = [features, fd];
 
         end
-
-        opts = statset('UseParallel',1)
-        [~, centroids] = kmeans(features',num_clusters, ...
-                                        'distance','sqEuclidean', ...
-                                        'EmptyAction','singleton', ...
-                                        'Options',opts);
+        
+        centroids = vl_kmeans(features,num_clusters); %,'method', 'elkan') ;
+        
+        
+%         opts = statset('UseParallel',1)
+%         [~, centroids] = kmeans(features',num_clusters, ...
+%                                         'distance','sqEuclidean', ...
+%                                         'EmptyAction','singleton', ...
+%                                         'Options',opts);
         save( centroids_file, 'centroids' );
     end
