@@ -29,9 +29,15 @@ VOCopts.datadir=[cwd '/'];
 
 % change this path to a writable directory for your results
 VOCopts.resdir=[cwd '/results/'];
+if ~exist( VOCopts.resdir, 'dir' )
+    mkdir( VOCopts.resdir );
+end
 
 % change this path to a writable local directory for the example code
 VOCopts.localdir=[cwd '/local/'];
+if ~exist( VOCopts.localdir, 'dir' )
+    mkdir( VOCopts.localdir );
+end
 
 % initialize the test set
 
@@ -72,7 +78,7 @@ VOCopts.exfdpath=[VOCopts.localdir '%s_fd.mat'];
 
 % initialize options for our implementation 
 
-VOCopts.fd_folders = {'sift/', 'bg_sift/', 'textures/'};
+VOCopts.fd_folders = {'sift/', 'bg_sift/', 'textures/', 'color/'};
 
 for i = 1: length(VOCopts.fd_folders)
     folder = [VOCopts.localdir  VOCopts.fd_folders{i}];
@@ -85,5 +91,5 @@ end
 VOCopts.sift_path = [VOCopts.localdir VOCopts.fd_folders{1} 'sift_%d_%s.mat'];
 VOCopts.hist_path = [VOCopts.localdir VOCopts.fd_folders{2} 'hist%d_%d_%s.mat'];
 VOCopts.text_path = [VOCopts.localdir VOCopts.fd_folders{3} 'text_%d_%s.mat'];
-
+VOCopts.color_path = [VOCopts.localdir VOCopts.fd_folders{4} 'color%d_%d_%s.mat'];
 

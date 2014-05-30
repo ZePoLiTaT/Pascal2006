@@ -3,7 +3,7 @@ function   latex_table( classes, auc, dict_size )
 %   Detailed explanation goes here
 
 
-    disp('\begin{table}[h!]')
+    disp('\begin{table}[H]')
     disp('\centering')
     disp('\begin{tabular}{|c|c|}')
     disp('\hline')
@@ -16,7 +16,7 @@ function   latex_table( classes, auc, dict_size )
     
     disp('\hline')
     disp('\end{tabular}')
-    disp(sprintf('\\caption{AUC per Class. Dictionary Size: %d words}', dict_size))
+    disp(sprintf('\\Dictionary Size: %d words}', dict_size))
     disp(sprintf('\\label{tb:eval}'))
     disp('\end{table}')
 end
