@@ -36,35 +36,22 @@ end
     wekaTrain = convertWekaDataset('training',f,ctrain);
     
     % create classifier instance and train it
-    
-    % SVM
-%     classifier = weka.classifiers.functions.SMO();     
-%     classifier.setC(100);
-%     k = weka.classifiers.functions.supportVector.Puk();
-%     k.setOmega(1.0);
-%     k.setSigma(1.0);
-%     classifier.setKernel(k);  
-%     classifier.buildClassifier(wekaTrain);
 
-    % Random Forest
-    %Settings for the classifier
-    v(1) = java.lang.String('-I');
-    v(2) = java.lang.String('10');
-    v(3) = java.lang.String('-K');
-    v(4) = java.lang.String('0');
-    v(5) = java.lang.String('-S');
-    v(6) = java.lang.String('1');
-    v(7) = java.lang.String('-depth');
-    v(8) = java.lang.String('0');
-    prm = cat(1,v(1:end));
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %Train the classifier
 
-    %create classifier instance, and perform the evaluation
-    classifier = javaObject('weka.classifiers.trees.RandomForest');
+    %Naive Bayes
+    %classifier = trainWekaClassifier(wekaTrain,'bayes.NaiveBayes');
 
-    classifier.setOptions(prm)
+    %SVM
+    %classifier = trainWekaClassifier(wekaTrain,'functions.SMO');
 
-    %build classifier model
-    classifier.buildClassifier(wekaTrain);
+    % AdaBoost
+    %classifier = trainWekaClassifier(wekaTrain,'meta.AdaBoostM1');
+
+    %RandomForest
+    classifier = trainWekaClassifier(wekaTrain,'trees.RandomForest');
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 end
 
