@@ -16,7 +16,7 @@ function   latex_table( classes, auc, dict_size )
     
     disp('\hline')
     disp('\end{tabular}')
-    disp(sprintf('\\Dictionary Size: %d words}', dict_size))
+    disp(sprintf('\\caption{Dictionary Size: %d words}', dict_size))
     disp(sprintf('\\label{tb:eval}'))
     disp('\end{table}')
 end
