@@ -1,19 +1,6 @@
-function pascal_classifier
+function results_auc = pascal_classifier( VOCopts, dict_size )
 %PASCAL_CLASSIFIER
 
-    %clear variables
-    clc; clear; close all;
-    
-    % change this path if you install the VOC code elsewhere
-    addpath([cd '/VOCcode']);
-    
-    
-    % parameters initialization
-    dict_size = 400;
-    
-    % initialize VOC options
-    VOCinit;
-    
     
     % create an AUC results table 
     results_auc = zeros( VOCopts.nclasses, 1 );
@@ -46,7 +33,7 @@ function pascal_classifier
 
     end
     
-    latex_table( VOCopts.classes, results_auc, dict_size );
+    
 end
 
 
@@ -147,7 +134,7 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             %fd_text = texture_cooccurrence( img_box, text_path, offset );
             
             % Color features
-            fd_color = color_histogram( img_box, color_path, color_bins );
+            %fd_color = color_histogram( img_box, color_path, color_bins );
             
             % Concatenate features
             fd = [fd_text, fd_color, fd_hist];
