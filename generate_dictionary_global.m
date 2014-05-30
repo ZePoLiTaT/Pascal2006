@@ -23,7 +23,7 @@ function generate_dictionary_global( )
 
     % clusterize!!
     %cluserts = [400,600,650];
-    cluserts = [100,200,300,700,1000];
+    cluserts = 100:100:800;
     for i = 1: length(cluserts)
         make_cluster( VOCopts, cluserts(i) );
         disp('     [Done !]')
@@ -37,11 +37,9 @@ function ids = get_subset_ids(VOCopts)
     % load 'train' image set for class
     [ids_train,~] = textread(sprintf(VOCopts.clsimgsetpath,cls,'train'),'%s %d');
     % load 'train' image set for class
-    [ids_val,~] = textread(sprintf(VOCopts.clsimgsetpath,cls,'val'),'%s %d');
-    % load 'train' image set for class
-    [ids_test,~] = textread(sprintf(VOCopts.clsimgsetpath,cls,'test'),'%s %d');
+    %[ids_val,~] = textread(sprintf(VOCopts.clsimgsetpath,cls,'val'),'%s %d');
     
-    ids = [ids_train; ids_val; ids_test];
+    ids = [ids_train];
     
 %%   
 % Extract features from all images

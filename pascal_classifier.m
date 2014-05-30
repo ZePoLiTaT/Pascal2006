@@ -65,7 +65,7 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
     % set the number of offsets and directions of the co-occurrence
     % matrices
     offset = create_offsets( [2,5,30], [1 1 1 1] );
-    color_bins = 1;
+    img_divs = 10;
     
     % load 'train' image set for class
     features_file = sprintf(VOCopts.clsimgsetpath, VOCopts.classes{1}, stage)
@@ -123,7 +123,7 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             sift_path = sprintf(VOCopts.sift_path, j, ids{i});
             hist_path = sprintf(VOCopts.hist_path, dict_size, j, ids{i});
             text_path = sprintf(VOCopts.text_path, j, ids{i});
-            color_path = sprintf(VOCopts.color_path, color_bins, j, ids{i});
+            color_path = sprintf(VOCopts.color_path, img_divs, j, ids{i});
             
             
             % SIFT features
@@ -134,7 +134,7 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             %fd_text = texture_cooccurrence( img_box, text_path, offset );
             
             % Color features
-            %fd_color = color_histogram( img_box, color_path, color_bins );
+            %fd_color = mean_rgb_patch( img_box, color_path, img_divs )
             
             % Concatenate features
             fd = [fd_text, fd_color, fd_hist];

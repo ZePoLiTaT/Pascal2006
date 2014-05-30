@@ -17,6 +17,7 @@ function [ histogram ] = sift_histogram( features, dictionary, img_path, varargi
             histogram(ix_min) = histogram(ix_min) + 1;
         end
         
+        histogram = histogram / sum(histogram);
         save( img_path , 'histogram');
     end
 

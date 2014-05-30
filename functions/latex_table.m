@@ -1,19 +1,20 @@
-function   latex_table( classes, auc )
+function   latex_table( classes, auc, param_names )
 %LATEX_TABLE Summary of this function goes here
 %   Detailed explanation goes here
 
     dicts_size = size( auc, 2 );
 
-    res_frmt = ['%f '];
-    res_frmt = repmat( res_frmt,  1, dicts_size );
-    res_frmt = ['%s & ' res_frmt];
+    col_frmt = [ repmat( '|c', 1, dicts_size + 1 ) '|'];
+    hdr_frmt = ['\\rowcolor{black} \\color{white} \\textbf{Class} ' repmat( '& \\color{white} \\textbf{%d} ',  1, dicts_size ) '\\\\'];
+    res_frmt = ['%s ' repmat( '& %f ',  1, dicts_size ) '\\\\'];
     
     
     disp('\begin{table}[H]')
     disp('\centering')
-    disp('\begin{tabular}{|c|c|}')
+    disp(sprintf( '\\begin{tabular}{%s}', col_frmt ))
     disp('\hline')
-    disp('\rowcolor{black} \color{white} \textbf{Class} & \color{white} \textbf{AUC} \\')
+    %disp('\rowcolor{black} \color{white} \textbf{Class} & \color{white} \textbf{AUC} \\')
+    disp(sprintf(hdr_frmt, param_names))
     disp('\hline')
     
     for i=1:length(classes)
@@ -24,7 +25,7 @@ function   latex_table( classes, auc )
     
     disp('\hline')
     disp('\end{tabular}')
-    disp(sprintf('\\caption{Dictionary Size: %d words}'))
+    disp(sprintf('\\caption{}'))
     disp(sprintf('\\label{tb:eval}'))
     disp('\end{table}')
 end
