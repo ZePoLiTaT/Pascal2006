@@ -1,4 +1,4 @@
-function   latex_table( classes, auc )
+function   latex_table( classes, auc, dict_size )
 %LATEX_TABLE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -16,7 +16,7 @@ function   latex_table( classes, auc )
     
     disp('\hline')
     disp('\end{tabular}')
-    disp(sprintf('\\caption{AUC per Class}'))
+    disp(sprintf('\\caption{AUC per Class. Dictionary Size: %d words}', dict_size))
     disp(sprintf('\\label{tb:eval}'))
     disp('\end{table}')
 end
