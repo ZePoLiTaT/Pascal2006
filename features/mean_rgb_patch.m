@@ -12,10 +12,20 @@ function fd_color_patch = mean_rgb_patch(img, num_divs, img_path)
             for j = 1:num_divs
                 dv = img( floor(1+(i-1)*nr/num_divs) : floor(i*nr/num_divs),...
                          floor(1+(j-1)*nc/num_divs) : floor(j*nc/num_divs), : );
-                fd_color_patch = [fd_color_patch;sum(sum(double(dv)))/(size(dv,1)*size(dv,2))];
+                     
+                if size(dv,1) == 1 && size(dv,2) == 1
+                    mean_ch = dv;
+                elseif size(dv,1) == 1 || size(dv,2) == 1
+                    mean_ch = sum(double(dv))/(size(dv,1)*size(dv,2));
+                else
+                    mean_ch = sum(sum(double(dv)))/(size(dv,1)*size(dv,2));
+                end
+                %figure(99); imshow(dv);
+                fd_color_patch = [fd_color_patch; mean_ch];
             end
         end
         
-        load( img_path, 'fd_color_patch');
+        fd_color_patch = fd_color_patch(:)';
+        save( img_path , 'fd_color_patch');
     end
 end

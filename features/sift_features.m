@@ -9,7 +9,7 @@ function [ fd ] = sift_features( img, img_path )
 
         % compute and save features
         img = double( rgb2gray(img) )/256 ;
-        [~,fd] = sift(img, 'Verbosity', 1);
+        [~,fd] = sift(img, 'Verbosity', 0);
 
         save( img_path , 'fd');
         

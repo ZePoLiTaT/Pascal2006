@@ -6,7 +6,7 @@ function   latex_table( classes, auc, param_names )
 
     col_frmt = [ repmat( '|c', 1, dicts_size + 1 ) '|'];
     hdr_frmt = ['\\rowcolor{black} \\color{white} \\textbf{Class} ' repmat( '& \\color{white} \\textbf{%d} ',  1, dicts_size ) '\\\\'];
-    res_frmt = ['%s ' repmat( '& %f ',  1, dicts_size ) '\\\\'];
+    res_frmt = ['%s ' repmat( '& %.3f ',  1, dicts_size ) '\\\\'];
     
     
     disp('\begin{table}[H]')

@@ -4,29 +4,29 @@ function generate_dictionary_global( )
 %   Loop through all available images to extract SIFT descriptors and form
 %   a visual dictionary
 
+    clc; clear; close all;
+
     % change this path if you install the VOC code elsewhere
     addpath([cd '/VOCcode']);
 
     % initialize VOC options
     VOCinit;
     
+    % extract the ids of the images to use for the dictionary generation
     ids = get_subset_ids(VOCopts);
-
-    cls_clusters = [VOCopts.dictpath_global, 'dictionary.mat'];
-    if exist(cls_clusters, 'file')
-        disp('     [Dictionary exist !]')
-        return
-    end
         
     % extract features
     extract_features( VOCopts, ids );	
 
-    % clusterize!!
-    %cluserts = [400,600,650];
-    cluserts = 100:100:800;
-    for i = 1: length(cluserts)
-        make_cluster( VOCopts, cluserts(i) );
+    % create dictionaries of sizes 100 to 1000
+    clusters = 100:100:1000;
+    
+    % cluster all the sift feature vectors
+    for i = 1: length(clusters)
+        
+        make_cluster( VOCopts, clusters(i) );
         disp('     [Done !]')
+        
     end
     
 
@@ -34,10 +34,9 @@ function generate_dictionary_global( )
 function ids = get_subset_ids(VOCopts)
     % get the name of the 1st class
     cls = VOCopts.classes{1};
+    
     % load 'train' image set for class
     [ids_train,~] = textread(sprintf(VOCopts.clsimgsetpath,cls,'train'),'%s %d');
-    % load 'train' image set for class
-    %[ids_val,~] = textread(sprintf(VOCopts.clsimgsetpath,cls,'val'),'%s %d');
     
     ids = [ids_train];
     
@@ -60,42 +59,13 @@ function extract_features(VOCopts, file_ids)
             tic;
         end
         
+        img_box = imread( file_path );
+        sift_path = sprintf(VOCopts.sift_path, 1, file_ids{i} );
+        fd_sift = sift_features( img_box, sift_path );
 
-        % extract features for image
-        try
-            % try to load features
-            load( sprintf( [VOCopts.dictpath_global VOCopts.dictnamefrmt] ,file_ids{i}) ,'fd');
-        catch
-            % compute and save features
-            I = imread( file_path );
-            fd = extractfd( VOCopts,  I);
-
-            save( sprintf( [VOCopts.dictpath_global VOCopts.dictnamefrmt] ,file_ids{i}) ,'fd');
-
-        end
     end
 
 
-
-% trivial feature extractor: compute mean RGB
-function fd = extractfd( VOCopts, I )
-    fd = sift_descriptor(I);
-
-
-
-%sift feature extractor
-function fd = sift_descriptor(I)
-
-    I = double(rgb2gray(I)/256) ;
-    [frames,descriptors] = sift(I, 'Verbosity', 1) ;
-
-%     if size(frames,2) > 0
-%         clf; imagesc(I) ; colormap gray ; axis image ; hold on ;
-%         h=plotsiftframe( frames(:,:),'style','arrow' ) ; set(h,'LineWidth',1,'Color','g') ;
-%         h=plot(frames(1,:),frames(2,:),'r.');
-%     end
-
-    fd = descriptors;
 
 
 function centroids = make_cluster( VOCopts, num_clusters )
@@ -111,43 +81,43 @@ function centroids = make_cluster( VOCopts, num_clusters )
         load(centroids_file)
     catch
     
+        sift_folder = [VOCopts.localdir VOCopts.fd_folders{1}];
+        
         % Create a temporal folder for the features of the class 
         % before kmeans
-        if ~exist( VOCopts.dictpath_global , 'dir')
-            disp('Features must be created before calling kmeans')
+        if ~exist( sift_folder , 'dir')
+            disp('SIFT Features must be created before calling kmeans')
             return
         end
+        
+        
 
 
         %if the centroids file is already calculated ..
-        file_list = dir( [VOCopts.dictpath_global '*_fd.mat'] );
+        file_list = dir( [sift_folder 'sift_*.mat'] );
 
-        tic;
+%         tic;
         
         % iterate through all feature files
         for file = 1 : length( file_list )
 
-            % display progress
-            if toc>1
-                fprintf('Clustering features: %d/%d [Size: %d] \n',int16(file), length(file_list), size(features,2) );
-                drawnow;
-                tic;
-            end
+%             % display progress
+%             if toc>1
+%                 fprintf('Clustering features: %d/%d [Size: %d] \n',int16(file), length(file_list), size(features,2) );
+%                 drawnow;
+%                 tic;
+%             end
             
-            file_path = fullfile( VOCopts.dictpath_global, file_list( file ).name );
-            load( file_path )
+            sift_path = [sift_folder  file_list(file).name];
+            load( sift_path )
 
             features = [features, fd];
 
         end
         
-        centroids = vl_kmeans(features,num_clusters); %,'method', 'elkan') ;
+        tic
+        centroids = vl_kmeans(features,num_clusters); 
+        toc
         
-        
-%         opts = statset('UseParallel',1)
-%         [~, centroids] = kmeans(features',num_clusters, ...
-%                                         'distance','sqEuclidean', ...
-%                                         'EmptyAction','singleton', ...
-%                                         'Options',opts);
         save( centroids_file, 'centroids' );
     end

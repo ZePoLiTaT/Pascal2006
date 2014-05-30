@@ -7,7 +7,7 @@ function results_auc = pascal_classifier( VOCopts, dict_size )
     
     sift_dict = load_dictionary( VOCopts, dict_size );
     
-    train_dataset = load_features( VOCopts, 'train', sift_dict, true );
+    train_dataset = load_features( VOCopts, 'train', sift_dict, false );
     test_dataset = load_features( VOCopts, VOCopts.testset, sift_dict, false );
 
     % train and test classifier for each class
@@ -43,7 +43,7 @@ function dictionary = load_dictionary( VOCopts, dict_size )
 
 
     % folder where the features will be stored
-    centroids_file = [VOCopts.dictpath_global, ['centroids_' num2str(dict_size) '.mat']]
+    centroids_file = [VOCopts.dictpath_global, ['centroids_' num2str(dict_size) '.mat']];
 
     try
         load(centroids_file);
@@ -68,7 +68,7 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
     img_divs = 10;
     
     % load 'train' image set for class
-    features_file = sprintf(VOCopts.clsimgsetpath, VOCopts.classes{1}, stage)
+    features_file = sprintf(VOCopts.clsimgsetpath, VOCopts.classes{1}, stage);
     [ids, ~] = textread(features_file,'%s %d');
 
     % Bounding box of the feature
@@ -127,14 +127,14 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             
             
             % SIFT features
-            fd_sift = sift_features( img_box, sift_path );
-            fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
+%             fd_sift = sift_features( img_box, sift_path );
+%             fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
             
             % Texture features
             %fd_text = texture_cooccurrence( img_box, text_path, offset );
             
             % Color features
-            %fd_color = mean_rgb_patch( img_box, color_path, img_divs )
+            fd_color = mean_rgb_patch( img_box, img_divs, color_path);
             
             % Concatenate features
             fd = [fd_text, fd_color, fd_hist];
@@ -194,7 +194,6 @@ function test(VOCopts, cls, classifier, dataset)
     evaluator.gt = gt( dataset.gt_ix );
     
     [correct,prob] = weka_evaluation( classifier, evaluator.FD', evaluator.gt );
-    correct
 
     % save results 
     % create results file
@@ -207,3 +206,4 @@ function test(VOCopts, cls, classifier, dataset)
     % close results file
     fclose(fid);
 end
+

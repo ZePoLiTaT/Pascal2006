@@ -36,15 +36,19 @@ for i=1:length(ids)
         tic;
     end
 
-    try
-        % try to load features
-        load(sprintf(VOCopts.exfdpath,ids{i}),'fd');
-    catch
-        % compute and save features
-        I=imread(sprintf(VOCopts.imgpath,ids{i}));
-        fd=extractfd(VOCopts,I);
-        save(sprintf(VOCopts.exfdpath,ids{i}),'fd');
-    end
+    img_box  = imread(sprintf(VOCopts.imgpath,ids{i}));
+    color_path = sprintf(VOCopts.color_path, 10, 1, ids{i});
+    fd = mean_rgb_patch( img_box, 10, color_path)';
+    
+%     try
+%         % try to load features
+%         load(sprintf(VOCopts.exfdpath,ids{i}),'fd');
+%     catch
+%         % compute and save features
+%         I=imread(sprintf(VOCopts.imgpath,ids{i}));
+%         fd=extractfd(VOCopts,I);
+%         save(sprintf(VOCopts.exfdpath,ids{i}),'fd');
+%     end
     
     classifier.FD(1:length(fd),i)=fd;
 end
@@ -68,15 +72,19 @@ for i=1:length(ids)
         tic;
     end
     
-    try
-        % try to load features
-        load(sprintf(VOCopts.exfdpath,ids{i}),'fd');
-    catch
-        % compute and save features
-        I=imread(sprintf(VOCopts.imgpath,ids{i}));
-        fd=extractfd(VOCopts,I);
-        save(sprintf(VOCopts.exfdpath,ids{i}),'fd');
-    end
+    img_box  = imread(sprintf(VOCopts.imgpath,ids{i}));
+    color_path = sprintf(VOCopts.color_path, 10, 1, ids{i});
+    fd = mean_rgb_patch( img_box, 10, color_path)';
+    
+%     try
+%         % try to load features
+%         load(sprintf(VOCopts.exfdpath,ids{i}),'fd');
+%     catch
+%         % compute and save features
+%         I=imread(sprintf(VOCopts.imgpath,ids{i}));
+%         fd=extractfd(VOCopts,I);
+%         save(sprintf(VOCopts.exfdpath,ids{i}),'fd');
+%     end
 
     % compute confidence of positive classification
     c=classify(VOCopts,classifier,fd);
@@ -91,7 +99,16 @@ fclose(fid);
 % trivial feature extractor: compute mean RGB
 function fd = extractfd(VOCopts,I)
 
-fd=squeeze(sum(sum(double(I)))/(size(I,1)*size(I,2)));
+fd = [];
+[nr,nc,nz] = size(I);
+for i=1:10,
+	for j=1:10,
+		dv = I(floor(1+(i-1)*nr/10):floor(i*nr/10),floor(1+(j-1)*nc/10):floor(j*nc/10),:);
+		fd = [fd;sum(sum(double(dv)))/(size(dv,1)*size(dv,2))];
+%fd=squeeze(sum(sum(double(I)))/(size(I,1)*size(I,2)));
+	end
+end
+fd = fd(:);
 
 % trivial classifier: compute ratio of L2 distance betweeen
 % nearest positive (class) feature vector and nearest negative (non-class)

@@ -1,7 +1,8 @@
 clear VOCopts
+warning('off','all')
+
 
 % get current directory with forward slashes
-
 addpath('../lib/sift')
 addpath('./functions/')
 addpath('./features/')
@@ -71,8 +72,12 @@ VOCopts.dictpath = [VOCopts.localdir 'dictionary/'];
 VOCopts.dictclasspath = [VOCopts.dictpath ,'%s/'];
 
 VOCopts.dictpath_global = [VOCopts.localdir 'dictionary_global/'];
-VOCopts.dictclasspath_global = [VOCopts.dictpath_global ,'%s/'];
+if ~exist( VOCopts.dictpath_global, 'dir' )
+    mkdir( VOCopts.dictpath_global );
+end
 
+VOCopts.dictclasspath_global = [VOCopts.dictpath_global ,'%s/'];
+VOCopts.dictnamefrmt  = '%s_fd.mat';
 
 VOCopts.exfdpath=[VOCopts.localdir '%s_fd.mat'];
 
