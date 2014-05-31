@@ -7,7 +7,7 @@ function results_auc = pascal_classifier( VOCopts, dict_size )
     
     sift_dict = load_dictionary( VOCopts, dict_size );
     
-    train_dataset = load_features( VOCopts, 'train', sift_dict, false );
+    train_dataset = load_features( VOCopts, 'train', sift_dict, true );
     test_dataset = load_features( VOCopts, VOCopts.testset, sift_dict, false );
 
     % train and test classifier for each class
@@ -122,22 +122,26 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             fd_text = [];
             fd_color = [];
             
+            
             % Paths to feature directories
             sift_path = sprintf(VOCopts.sift_path, iix, ids{i});
             hist_path = sprintf(VOCopts.hist_path, dict_size, iix, ids{i});
             text_path = sprintf(VOCopts.text_path, iix, ids{i});
-            color_path = sprintf(VOCopts.color_path, img_divs, iix, ids{i});
+            rgb_path = sprintf(VOCopts.color_path, img_divs, iix, ids{i});
+            hsv_path = sprintf(VOCopts.hsv_path, img_divs, iix, ids{i});
             
             
             % SIFT features
-            fd_sift = sift_features( img_box, sift_path );
-            fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
+%             fd_sift = sift_features( img_box, sift_path );
+%             fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
             
             % Texture features
 %             fd_text = texture_cooccurrence( img_box, text_path, offset );
             
             % Color features
-%             fd_color = mean_rgb_patch( img_box, img_divs, color_path);
+%             fd_color = mean_rgb_patch( img_box, img_divs, rgb_path );
+            img_hsv = rgb2hsv(img_box);
+            fd_color = mean_rgb_patch( img_hsv, img_divs, hsv_path );
             
             % Concatenate features
             fd = [fd_text, fd_color, fd_hist];

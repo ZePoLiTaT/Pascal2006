@@ -17,9 +17,10 @@ function [ fd ] = dsift_features( img, img_path, bin_size, magnif )
         img = single(vl_imdown(rgb2gray(img))) ;
         img_smt = vl_imsmooth(img, sqrt((bin_size/magnif)^2 - .25)) ;
 
-        fd = vl_dsift(img_smt, 'step', 2) ;
-        fd(3,:) = bin_size/magnif ;
-        fd(4,:) = 0 ;
+        [loc, fd] = vl_dsift(img_smt, 'step', 10) ;
+        fd = double(fd)/sum(sum(fd));
+%         loc(3,:) = bin_size/magnif ;
+%         loc(4,:) = 0 ;
         
         save( img_path , 'fd');
         

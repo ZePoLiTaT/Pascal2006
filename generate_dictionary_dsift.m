@@ -16,8 +16,8 @@ function generate_dictionary_dsift
     ids = get_subset_ids(VOCopts);
         
     % extract features
-    extract_features( VOCopts, ids );	
-
+    features = extract_features( VOCopts, ids );
+    
     % create dictionaries of sizes 100 to 1000
     %clusters = 100:100:1000;   %clusters for sift
     clusters = [100,300,600,900]; %clusters for dsift
@@ -25,7 +25,7 @@ function generate_dictionary_dsift
     % cluster all the sift feature vectors
     for i = 1: length(clusters)
         
-        make_cluster( VOCopts, clusters(i) );
+        make_cluster( VOCopts, clusters(i), features );
         disp('     [Done !]')
         
     end
@@ -45,8 +45,9 @@ end
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
 %                Extract features from all images
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
-function extract_features(VOCopts, file_ids)
+function features = extract_features(VOCopts, file_ids)
 
+    features = [];
     tic;
     
     % iterate through all feature files
@@ -64,17 +65,18 @@ function extract_features(VOCopts, file_ids)
         img_box = imread( file_path );
         dsift_path = sprintf(VOCopts.dsift_path, 1, file_ids{i} );
         fd_dsift = dsift_features( img_box, dsift_path );
-
+        
+        features = [features, fd_dsift];
     end
+    
 end
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
 %                               CLUSTERIZE 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
-function centroids = make_cluster( VOCopts, num_clusters )
+function centroids = make_cluster( VOCopts, num_clusters, features )
 
     % initialize centroids
-    features = [];
     centroids = [];
 
     % folder where the features will be stored
@@ -84,34 +86,36 @@ function centroids = make_cluster( VOCopts, num_clusters )
         load(centroids_file)
     catch
     
-        dsift_folder = [VOCopts.localdir VOCopts.fd_folders{5}];
-        
-        % Create a temporal folder for the features of the class 
-        % before kmeans
-        if ~exist( dsift_folder , 'dir')
-            disp('DSIFT Features must be created before calling kmeans')
-            return
-        end
-        
-        %if the centroids file is already calculated ..
-        file_list = dir( [dsift_folder 'dsift_*.mat'] );
+        if isempty(features)
+            dsift_folder = [VOCopts.localdir VOCopts.fd_folders{5}];
 
-        tic;
-        % iterate through all feature files
-        for file = 1 : length( file_list )
-
-            % display progress
-            if toc>1
-                fprintf('Clustering features: %d/%d [Size: %d] \n',int16(file), length(file_list), size(features,2) );
-                drawnow;
-                tic;
+            % Create a temporal folder for the features of the class 
+            % before kmeans
+            if ~exist( dsift_folder , 'dir')
+                disp('DSIFT Features must be created before calling kmeans')
+                return
             end
-            
-            sift_path = [dsift_folder  file_list(file).name];
-            load( sift_path )
 
-            features = [features, fd];
+            %if the centroids file is already calculated ..
+            file_list = dir( [dsift_folder 'dsift_*.mat'] );
 
+            tic;
+            % iterate through all feature files
+            for file = 1 : length( file_list )
+
+                % display progress
+                if toc>1
+                    fprintf('Clustering features: %d/%d [Size: %d] \n',int16(file), length(file_list), size(features,2) );
+                    drawnow;
+                    tic;
+                end
+
+                sift_path = [dsift_folder  file_list(file).name];
+                load( sift_path )
+
+                features = [features, fd];
+
+            end
         end
         
         tic
