@@ -1,4 +1,4 @@
-function generate_dictionary_global( )
+function generate_dictionary_sift
 %GENERATE_DICTIONARY Extract SIFT descriptors from all images to forma
 %visual dictionary
 %   Loop through all available images to extract SIFT descriptors and form
@@ -19,7 +19,8 @@ function generate_dictionary_global( )
     extract_features( VOCopts, ids );	
 
     % create dictionaries of sizes 100 to 1000
-    clusters = 100:100:1000;
+    %clusters = 100:100:1000;   %clusters for sift
+    clusters = [100,300,600,900]; %clusters for dsift
     
     % cluster all the sift feature vectors
     for i = 1: length(clusters)
@@ -28,7 +29,7 @@ function generate_dictionary_global( )
         disp('     [Done !]')
         
     end
-    
+end
 
 
 function ids = get_subset_ids(VOCopts)
@@ -39,10 +40,11 @@ function ids = get_subset_ids(VOCopts)
     [ids_train,~] = textread(sprintf(VOCopts.clsimgsetpath,cls,'train'),'%s %d');
     
     ids = [ids_train];
-    
-%%   
-% Extract features from all images
-%_
+end
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
+%                Extract features from all images
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
 function extract_features(VOCopts, file_ids)
 
     tic;
@@ -64,10 +66,11 @@ function extract_features(VOCopts, file_ids)
         fd_sift = sift_features( img_box, sift_path );
 
     end
+end
 
-
-
-
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
+%                               CLUSTERIZE 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
 function centroids = make_cluster( VOCopts, num_clusters )
 
     % initialize centroids
@@ -90,23 +93,19 @@ function centroids = make_cluster( VOCopts, num_clusters )
             return
         end
         
-        
-
-
         %if the centroids file is already calculated ..
         file_list = dir( [sift_folder 'sift_*.mat'] );
 
-%         tic;
-        
+        tic;
         % iterate through all feature files
         for file = 1 : length( file_list )
 
-%             % display progress
-%             if toc>1
-%                 fprintf('Clustering features: %d/%d [Size: %d] \n',int16(file), length(file_list), size(features,2) );
-%                 drawnow;
-%                 tic;
-%             end
+            % display progress
+            if toc>1
+                fprintf('Clustering features: %d/%d [Size: %d] \n',int16(file), length(file_list), size(features,2) );
+                drawnow;
+                tic;
+            end
             
             sift_path = [sift_folder  file_list(file).name];
             load( sift_path )
@@ -121,3 +120,4 @@ function centroids = make_cluster( VOCopts, num_clusters )
         
         save( centroids_file, 'centroids' );
     end
+end

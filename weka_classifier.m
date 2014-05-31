@@ -41,16 +41,16 @@ end
     %Train the classifier
 
     %Naive Bayes
-    %classifier = trainWekaClassifier(wekaTrain,'bayes.NaiveBayes');
+%     classifier = trainWekaClassifier(wekaTrain,'bayes.NaiveBayes');
 
     %SVM
-    %classifier = trainWekaClassifier(wekaTrain,'functions.SMO');
+%     classifier = trainWekaClassifier(wekaTrain,'functions.SMO');
 
     % AdaBoost
     classifier = trainWekaClassifier(wekaTrain,'meta.AdaBoostM1');
 
     %RandomForest
-    %classifier = trainWekaClassifier(wekaTrain,'trees.RandomForest');
+%     classifier = trainWekaClassifier(wekaTrain,'trees.RandomForest');
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 end

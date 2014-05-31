@@ -7,8 +7,8 @@ addpath([cd '/VOCcode']);
 % initialize VOC options
 VOCinit;
 
-%dict_sizes = [100:100:700];
-dict_sizes = 1000;
+dict_sizes = [100:100:1000];
+% dict_sizes = 1000;
 
 % create an AUC results table 
 results_auc = zeros( VOCopts.nclasses, length(dict_sizes) );
@@ -18,3 +18,8 @@ for i = 1: length(dict_sizes)
 end
 
 latex_table( VOCopts.classes, results_auc, dict_sizes );
+
+%TODO:
+% 1. Spatial pyramid
+% 2. Separate features and classifier per class
+% 3. Dense sift

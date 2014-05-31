@@ -83,7 +83,7 @@ VOCopts.exfdpath=[VOCopts.localdir '%s_fd.mat'];
 
 % initialize options for our implementation 
 
-VOCopts.fd_folders = {'sift/', 'bg_sift/', 'textures/', 'color/'};
+VOCopts.fd_folders = {'sift/', 'bg_sift/', 'textures/', 'color/', 'dsift/'};
 
 for i = 1: length(VOCopts.fd_folders)
     folder = [VOCopts.localdir  VOCopts.fd_folders{i}];
@@ -97,4 +97,4 @@ VOCopts.sift_path = [VOCopts.localdir VOCopts.fd_folders{1} 'sift_%d_%s.mat'];
 VOCopts.hist_path = [VOCopts.localdir VOCopts.fd_folders{2} 'hist%d_%d_%s.mat'];
 VOCopts.text_path = [VOCopts.localdir VOCopts.fd_folders{3} 'text_%d_%s.mat'];
 VOCopts.color_path = [VOCopts.localdir VOCopts.fd_folders{4} 'color%d_%d_%s.mat'];
-
+VOCopts.dsift_path = [VOCopts.localdir VOCopts.fd_folders{5} 'dsift_%d_%s.mat'];

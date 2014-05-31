@@ -1,4 +1,4 @@
-function [ output_args ] = generate_dictionary( input_args )
+function [ output_args ] = generate_dictionary_class( input_args )
 %GENERATE_DICTIONARY Extract SIFT descriptors from all images to forma
 %visual dictionary
 %   Loop through all available images to extract SIFT descriptors and form

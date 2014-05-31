@@ -11,6 +11,7 @@ function results_auc = pascal_classifier( VOCopts, dict_size )
     test_dataset = load_features( VOCopts, VOCopts.testset, sift_dict, false );
 
     % train and test classifier for each class
+    %for i=1:VOCopts.nclasses
     for i=1:VOCopts.nclasses
 
         cls=VOCopts.classes{i};
@@ -113,6 +114,8 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             
             img  = imread(sprintf(VOCopts.imgpath,ids{i}));
             img_box  = img( cur_box(2):cur_box(4), cur_box(1):cur_box(3), : );
+            
+            if use_bbox; iix=j; else iix=99; end
 
             % Initialize feature vectors
             fd_hist = [];
@@ -120,21 +123,21 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             fd_color = [];
             
             % Paths to feature directories
-            sift_path = sprintf(VOCopts.sift_path, j, ids{i});
-            hist_path = sprintf(VOCopts.hist_path, dict_size, j, ids{i});
-            text_path = sprintf(VOCopts.text_path, j, ids{i});
-            color_path = sprintf(VOCopts.color_path, img_divs, j, ids{i});
+            sift_path = sprintf(VOCopts.sift_path, iix, ids{i});
+            hist_path = sprintf(VOCopts.hist_path, dict_size, iix, ids{i});
+            text_path = sprintf(VOCopts.text_path, iix, ids{i});
+            color_path = sprintf(VOCopts.color_path, img_divs, iix, ids{i});
             
             
             % SIFT features
-%             fd_sift = sift_features( img_box, sift_path );
-%             fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
+            fd_sift = sift_features( img_box, sift_path );
+            fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
             
             % Texture features
-            %fd_text = texture_cooccurrence( img_box, text_path, offset );
+%             fd_text = texture_cooccurrence( img_box, text_path, offset );
             
             % Color features
-            fd_color = mean_rgb_patch( img_box, img_divs, color_path);
+%             fd_color = mean_rgb_patch( img_box, img_divs, color_path);
             
             % Concatenate features
             fd = [fd_text, fd_color, fd_hist];
