@@ -7,9 +7,9 @@ addpath([cd '/VOCcode']);
 % initialize VOC options
 VOCinit;
 
-% VOCopts.testset='test';
-VOCopts.testset='val';
+VOCopts.testset='test';
+% VOCopts.testset='val';
 
 results_auc = pascal_classifier( VOCopts );
 
-latex_table( VOCopts.classes, results_auc, dict_sizes );
+latex_table( VOCopts.classes, results_auc, 1 );

@@ -19,8 +19,7 @@ function generate_dictionary_sift
     extract_features( VOCopts, ids );	
 
     % create dictionaries of sizes 100 to 1000
-    %clusters = 100:100:1000;   %clusters for sift
-    clusters = [100,300,600,900]; %clusters for dsift
+    clusters = 100:100:1000;   %clusters for sift
     
     % cluster all the sift feature vectors
     for i = 1: length(clusters)
