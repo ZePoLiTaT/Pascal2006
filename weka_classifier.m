@@ -18,7 +18,7 @@ function [ classifier ] = weka_classifier( vecTrain, gtTrain, type )
     
     % Make AdaBoost the default classifier
     if(~exist('type','var'))
-        type = 'AB';
+        type = 'A';
     end
     
     % create feature name
@@ -46,19 +46,15 @@ function [ classifier ] = weka_classifier( vecTrain, gtTrain, type )
     %Train the classifier
 
     %Naive Bayes
-    if strcmp( type, 'NB' )
+    if strcmp( type, 'N' )
         classifier = trainWekaClassifier(wekaTrain,'bayes.NaiveBayes');
 
-    %SVM
-    elseif strcmp( type, 'SVM' )
-        classifier = trainWekaClassifier(wekaTrain,'functions.SMO');
-
     % AdaBoost
-    elseif strcmp( type, 'AB' )
+    elseif strcmp( type, 'A' )
         classifier = trainWekaClassifier(wekaTrain,'meta.AdaBoostM1');
 
     %RandomForest
-    elseif strcmp( type, 'RF' )
+    elseif strcmp( type, 'R' )
         classifier = trainWekaClassifier(wekaTrain,'trees.RandomForest');
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

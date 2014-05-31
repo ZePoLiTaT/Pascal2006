@@ -104,7 +104,7 @@ VOCopts.hsv_path   = [VOCopts.localdir VOCopts.fd_folders{6} 'hsv%d_%d_%s.mat'];
 
 
 % PARAMETER SELECTION
-VOCopts.params.classifier = ['RF', 'AB', 'AB', 'AB', 'AB', 'AB', 'AB', 'AB', 'NB', 'AB'];
+VOCopts.params.classifier = ['R', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'N', 'A'];
 VOCopts.params.sparse_size = [900, 100, 1000, 900, -1, 100, 100, 300, 100, 100];
 VOCopts.params.dense_size = [-1, -1, -1, -1, 900, -1, -1, -1, -1, -1];
 VOCopts.params.hsv = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];

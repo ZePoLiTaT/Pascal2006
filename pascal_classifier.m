@@ -232,7 +232,7 @@ function classifier = train_bounding_box( VOCopts, i, cls, dataset)
     classifier.FD = dataset.FD;
     classifier.gt = gt( dataset.gt_ix );
     
-    classifier = weka_classifier( VOCopts.params.classifier(i), classifier.FD', classifier.gt );
+    classifier = weka_classifier( classifier.FD', classifier.gt, VOCopts.params.classifier(i) );
 end  
  
 
