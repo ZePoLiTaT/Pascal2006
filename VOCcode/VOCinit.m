@@ -100,3 +100,14 @@ VOCopts.color_path = [VOCopts.localdir VOCopts.fd_folders{4} 'color%d_%d_%s.mat'
 VOCopts.dsift_path = [VOCopts.localdir VOCopts.fd_folders{5} 'dsift_%d_%s.mat'];
 VOCopts.dhist_path = [VOCopts.localdir VOCopts.fd_folders{5} 'dhist%d_%d_%s.mat'];
 VOCopts.hsv_path   = [VOCopts.localdir VOCopts.fd_folders{6} 'hsv%d_%d_%s.mat'];
+
+
+
+% PARAMETER SELECTION
+VOCopts.params.classifier = ['RF', 'AB', 'AB', 'AB', 'AB', 'AB', 'AB', 'AB', 'NB', 'AB'];
+VOCopts.params.sparse_size = [900, 100, 1000, 900, -1, 100, 100, 300, 100, 100];
+VOCopts.params.dense_size = [-1, -1, -1, -1, 900, -1, -1, -1, -1, -1];
+VOCopts.params.hsv = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+VOCopts.params.rgb = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+VOCopts.params.coocmat = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+VOCopts.params.use_bbox = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];

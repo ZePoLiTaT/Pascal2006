@@ -1,4 +1,4 @@
-function [ classifier ] = weka_classifier( vecTrain, gtTrain )
+function [ classifier ] = weka_classifier( vecTrain, gtTrain, type )
 %WEKA_CLASSIFIER Summary of this function goes here
 %
 %   - vecTrain: vector of dimension N by d, containing N features of size d 
@@ -6,15 +6,20 @@ function [ classifier ] = weka_classifier( vecTrain, gtTrain )
 %   belongs to the class and -1 otherwise
 
     % add weka path
-if strncmp(computer,'PC',2)
-    javaaddpath('C:\Program Files\Weka-3-7\weka.jar');
-elseif strncmp(computer,'GLNX',4)
-    javaaddpath('/home/evargasv/weka-3-7-11/weka.jar');
-elseif strncmp(computer,'MACI64',3)
-    javaaddpath('/Applications/weka-3-7-11-apple-jvm.app/Contents/Resources/Java/weka.jar')
-end
+    if strncmp(computer,'PC',2)
+        javaaddpath('C:\Program Files\Weka-3-7\weka.jar');
+    elseif strncmp(computer,'GLNX',4)
+        javaaddpath('/home/evargasv/weka-3-7-11/weka.jar');
+    elseif strncmp(computer,'MACI64',3)
+        javaaddpath('/Applications/weka-3-7-11-apple-jvm.app/Contents/Resources/Java/weka.jar')
+    end
 
     import weka.*;
+    
+    % Make AdaBoost the default classifier
+    if(~exist('type','var'))
+        type = 'AB';
+    end
     
     % create feature name
     for i=1:size(vecTrain,2)+1,
@@ -41,16 +46,21 @@ end
     %Train the classifier
 
     %Naive Bayes
-%     classifier = trainWekaClassifier(wekaTrain,'bayes.NaiveBayes');
+    if strcmp( type, 'NB' )
+        classifier = trainWekaClassifier(wekaTrain,'bayes.NaiveBayes');
 
     %SVM
-%     classifier = trainWekaClassifier(wekaTrain,'functions.SMO');
+    elseif strcmp( type, 'SVM' )
+        classifier = trainWekaClassifier(wekaTrain,'functions.SMO');
 
     % AdaBoost
-    classifier = trainWekaClassifier(wekaTrain,'meta.AdaBoostM1');
+    elseif strcmp( type, 'AB' )
+        classifier = trainWekaClassifier(wekaTrain,'meta.AdaBoostM1');
 
     %RandomForest
-%     classifier = trainWekaClassifier(wekaTrain,'trees.RandomForest');
+    elseif strcmp( type, 'RF' )
+        classifier = trainWekaClassifier(wekaTrain,'trees.RandomForest');
+    end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 end

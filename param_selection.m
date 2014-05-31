@@ -18,12 +18,10 @@ VOCinit;
 results_auc = zeros( VOCopts.nclasses, length(dict_sizes) );
 
 for i = 1: length(dict_sizes)
-    results_auc(:, i) = pascal_classifier( VOCopts, dict_sizes(i), true );
+    results_auc(:, i) = pascal_classifier_param_selection( VOCopts, dict_sizes(i), true );
 end
 
 latex_table( VOCopts.classes, results_auc, dict_sizes );
 
 %TODO:
-% 1. Spatial pyramid
 % 2. Separate features and classifier per class
-% 3. Dense sift
