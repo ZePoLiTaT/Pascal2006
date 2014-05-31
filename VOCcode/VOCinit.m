@@ -98,4 +98,5 @@ VOCopts.hist_path = [VOCopts.localdir VOCopts.fd_folders{2} 'hist%d_%d_%s.mat'];
 VOCopts.text_path = [VOCopts.localdir VOCopts.fd_folders{3} 'text_%d_%s.mat'];
 VOCopts.color_path = [VOCopts.localdir VOCopts.fd_folders{4} 'color%d_%d_%s.mat'];
 VOCopts.dsift_path = [VOCopts.localdir VOCopts.fd_folders{5} 'dsift_%d_%s.mat'];
+VOCopts.dhist_path = [VOCopts.localdir VOCopts.fd_folders{5} 'dhist%d_%d_%s.mat'];
 VOCopts.hsv_path   = [VOCopts.localdir VOCopts.fd_folders{6} 'hsv%d_%d_%s.mat'];

@@ -1,14 +1,22 @@
-function results_auc = pascal_classifier( VOCopts, dict_size )
+function results_auc = pascal_classifier( VOCopts, dict_size, is_sparse )
 %PASCAL_CLASSIFIER
 
     
     % create an AUC results table 
     results_auc = zeros( VOCopts.nclasses, 1 );
     
-    sift_dict = load_dictionary( VOCopts, dict_size );
     
-    train_dataset = load_features( VOCopts, 'train', sift_dict, true );
-    test_dataset = load_features( VOCopts, VOCopts.testset, sift_dict, false );
+    % load dictionary depending if it is sparse or dense
+    if is_sparse
+        dic_suffix = '';
+    else
+        dic_suffix = 'dsift_';
+    end
+    sift_dict = load_dictionary( VOCopts, dict_size, dic_suffix );
+   
+    % load features
+    train_dataset = load_features( VOCopts, 'train', sift_dict, is_sparse, true );
+    test_dataset = load_features( VOCopts, VOCopts.testset, sift_dict, is_sparse, false );
 
     % train and test classifier for each class
     %for i=1:VOCopts.nclasses
@@ -38,13 +46,12 @@ function results_auc = pascal_classifier( VOCopts, dict_size )
 end
 
 
-function dictionary = load_dictionary( VOCopts, dict_size )
+function dictionary = load_dictionary( VOCopts, dict_size, suffix )
 %LOAD_DICTIONARY Summary of this function goes here
 %   Detailed explanation goes here
 
-
     % folder where the features will be stored
-    centroids_file = [VOCopts.dictpath_global, ['centroids_' num2str(dict_size) '.mat']];
+    centroids_file = [VOCopts.dictpath_global, ['centroids_' suffix num2str(dict_size) '.mat']];
 
     try
         load(centroids_file);
@@ -54,7 +61,7 @@ function dictionary = load_dictionary( VOCopts, dict_size )
     end
 end
 
-function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
+function dataset = load_features( VOCopts, stage, sift_dict, sparse_feat, use_bbox )
 
     % initialize dataset
     dataset.gt_ix = [];
@@ -124,28 +131,38 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             
             
             % Paths to feature directories
-            sift_path = sprintf(VOCopts.sift_path, iix, ids{i});
-            hist_path = sprintf(VOCopts.hist_path, dict_size, iix, ids{i});
+            if sparse_feat
+                sift_path = sprintf(VOCopts.sift_path, iix, ids{i});
+                hist_path = sprintf(VOCopts.hist_path, dict_size, iix, ids{i});
+            else
+                sift_path = sprintf(VOCopts.dsift_path, iix, ids{i});
+                hist_path = sprintf(VOCopts.dhist_path, dict_size, iix, ids{i});
+            end
+            
+            
             text_path = sprintf(VOCopts.text_path, iix, ids{i});
             rgb_path = sprintf(VOCopts.color_path, img_divs, iix, ids{i});
             hsv_path = sprintf(VOCopts.hsv_path, img_divs, iix, ids{i});
             
-            
             % SIFT features
             fd_sift = sift_features( img_box, sift_path );
-            fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
+            fd_hist = sift_histogram( fd_sift, sift_dict, hist_path);
             
             % Texture features
 %             fd_text = texture_cooccurrence( img_box, text_path, offset );
+%             fd_text = normalize_features( fd_text );
             
             % Color features
+            % RGB
 %             fd_color = mean_rgb_patch( img_box, img_divs, rgb_path );
-            img_hsv = rgb2hsv(img_box);
+%             fd_color = normalize_features( fd_color );
+            % HSV
+%             img_hsv = rgb2hsv(img_box);
 %             fd_color = mean_rgb_patch( img_hsv, img_divs, hsv_path );
+%             fd_color = normalize_features( fd_color );
             
-            % Concatenate features
-            fd = [fd_text, fd_color, fd_hist];
-            fd = fd / sum(fd);
+            % Concatenate features using DENSE SIFT
+            fd = [fd_hist, fd_text, fd_color];
             
             dataset.gt_ix = [ dataset.gt_ix; i ];
             dataset.FD = [ dataset.FD, fd'];
