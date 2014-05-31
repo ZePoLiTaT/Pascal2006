@@ -15,7 +15,7 @@ function results_auc = pascal_classifier( VOCopts, dict_size, is_sparse )
     sift_dict = load_dictionary( VOCopts, dict_size, dic_suffix );
    
     % load features
-    train_dataset = load_features( VOCopts, 'train', sift_dict, is_sparse, true );
+    train_dataset = load_features( VOCopts, 'train', sift_dict, is_sparse, is_sparse );
     test_dataset = load_features( VOCopts, VOCopts.testset, sift_dict, is_sparse, false );
 
     % train and test classifier for each class
