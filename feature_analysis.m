@@ -8,7 +8,7 @@ addpath([cd '/VOCcode']);
 VOCinit;
 
 %dict_sizes = [100:100:1000];
- dict_sizes = 1000;
+ dict_sizes = 100;
 
 % create an AUC results table 
 results_auc = zeros( VOCopts.nclasses, length(dict_sizes) );

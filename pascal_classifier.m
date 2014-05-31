@@ -132,8 +132,8 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             
             
             % SIFT features
-%             fd_sift = sift_features( img_box, sift_path );
-%             fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
+            fd_sift = sift_features( img_box, sift_path );
+            fd_hist = sift_histogram( fd_sift, sift_dict, hist_path );
             
             % Texture features
 %             fd_text = texture_cooccurrence( img_box, text_path, offset );
@@ -141,10 +141,11 @@ function dataset = load_features( VOCopts, stage, sift_dict, use_bbox )
             % Color features
 %             fd_color = mean_rgb_patch( img_box, img_divs, rgb_path );
             img_hsv = rgb2hsv(img_box);
-            fd_color = mean_rgb_patch( img_hsv, img_divs, hsv_path );
+%             fd_color = mean_rgb_patch( img_hsv, img_divs, hsv_path );
             
             % Concatenate features
             fd = [fd_text, fd_color, fd_hist];
+            fd = fd / sum(fd);
             
             dataset.gt_ix = [ dataset.gt_ix; i ];
             dataset.FD = [ dataset.FD, fd'];
